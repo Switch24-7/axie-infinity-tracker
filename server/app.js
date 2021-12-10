@@ -5,9 +5,15 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const axios = require('axios')
 
-const port = 4000
+mongoose.connect(process.env.MONGODB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Connected to database')
+}).catch(err => console.error(err));
 
 const app = express()
+const port = 4000
 
 // middlewares
 app.use(logger('dev'))

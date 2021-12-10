@@ -28,7 +28,7 @@ app.use(cors({
 // https://game-api.axie.technology/slp/RONIN_ADDRESS
 // https://game-api.axie.technology/mmr/RONIN_ADDRESS
 const api = 'https://game-api.axie.technology';
-const ronin = '';
+const ronin = 'ronin:a668f4e09c7cae0862c3b8313d627ed8e6b14f1c';
 
 // index page
 app.get('/', async (req, res) => {

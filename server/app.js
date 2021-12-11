@@ -8,15 +8,15 @@ mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
-  console.log('Connected to database');
-}).catch((err) => console.error(err));
+  console.log('Connected to database')
+}).catch((err) => console.error(err))
 
 const app = express();
 const PORT = 4000;
 
 // middlewares
 app.use(logger('dev'));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }))
 app.use(express.json());
 app.use(cors({
   origin: '*',

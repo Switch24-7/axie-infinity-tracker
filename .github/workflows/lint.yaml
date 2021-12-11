@@ -1,0 +1,16 @@
+name: Lint
+
+on: 
+  pull_request:
+
+jobs:
+  run-server-eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        working-directory: ./server
+        run: npm install
+      - name: Run eslint
+        working-directory: ./server
+        run: npm run lint

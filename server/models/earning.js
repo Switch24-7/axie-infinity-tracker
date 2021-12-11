@@ -2,17 +2,14 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const AccountSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  eth: {
-    type: String,
+const EarningSchema = new Schema({
+  accountId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Account',
     required: true,
     indexed: true,
   },
-  managerShare: {
+  total: {
     type: Number,
     required: true,
   },
@@ -22,5 +19,5 @@ const AccountSchema = new Schema({
   },
 });
 
-const Account = mongoose.model('Account', AccountSchema);
-module.exports = Account;
+const Earning = mongoose.model('Earning', EarningSchema);
+module.exports = Earning;

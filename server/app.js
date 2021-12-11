@@ -3,7 +3,6 @@ const express = require('express');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const axios = require('axios');
 
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
@@ -27,13 +26,10 @@ app.use(cors({
 // https://game-api.axie.technology/battlelog/RONIN_ADDRESS
 // https://game-api.axie.technology/slp/RONIN_ADDRESS
 // https://game-api.axie.technology/mmr/RONIN_ADDRESS
-const api = 'https://game-api.axie.technology';
-const ronin = '';
 
 // index page
 app.get('/', async (req, res) => {
-  const data = await axios.get(`${api}/slp/${ronin}`).then((response) => response.data);
-  res.json(data);
+  res.json('Server is up and running!');
 });
 
 app.listen(process.env.port || PORT, () => {

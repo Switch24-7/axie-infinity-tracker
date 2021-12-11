@@ -3,7 +3,6 @@ const express = require('express');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const gatherDailySnapshot = require('./utils/gatherDailySnapshot');
 
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
@@ -27,8 +26,6 @@ app.use(cors({
 // https://game-api.axie.technology/battlelog/RONIN_ADDRESS
 // https://game-api.axie.technology/slp/RONIN_ADDRESS
 // https://game-api.axie.technology/mmr/RONIN_ADDRESS
-
-gatherDailySnapshot();
 
 // index page
 app.get('/', async (req, res) => {

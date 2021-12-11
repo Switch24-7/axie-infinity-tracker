@@ -3,7 +3,7 @@ const express = require('express');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const axios = require('axios');
+const gatherDailySnapshot = require('./utils/gatherDailySnapshot');
 
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
@@ -27,13 +27,12 @@ app.use(cors({
 // https://game-api.axie.technology/battlelog/RONIN_ADDRESS
 // https://game-api.axie.technology/slp/RONIN_ADDRESS
 // https://game-api.axie.technology/mmr/RONIN_ADDRESS
-const api = 'https://game-api.axie.technology';
-const ronin = 'ronin:a668f4e09c7cae0862c3b8313d627ed8e6b14f1c';
+
+gatherDailySnapshot();
 
 // index page
 app.get('/', async (req, res) => {
-  const data = await axios.get(`${api}/slp/${ronin}`).then((response) => response.data);
-  res.json(data);
+  res.json('Server is up and running!');
 });
 
 app.listen(process.env.port || PORT, () => {

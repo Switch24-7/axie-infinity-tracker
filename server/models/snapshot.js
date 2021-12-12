@@ -3,9 +3,8 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const SnapshotSchema = new Schema({
-  accountId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Account',
+  eth: {
+    type: String,
     required: true,
     indexed: true,
   },

@@ -4,6 +4,8 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
+const slpRouter = require('./routes/slp');
+
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -32,7 +34,9 @@ app.get('/', async (req, res) => {
   res.json('Server is up and running!');
 });
 
-app.listen(process.env.port || PORT, () => {
+app.use(slpRouter);
+
+app.listen(process.env.PORT || PORT, () => {
   const port = process.env.port ? process.env.port : PORT;
   console.log(`Listening on port ${port}`);
 });

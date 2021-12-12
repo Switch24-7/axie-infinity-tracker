@@ -1,8 +1,8 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const axios = require('axios');
-const getAllAccounts = require('../utils/getAllAccounts');
-const addSnapshot = require('../utils/addSnapshot');
+const getAllAccounts = require('../utils/mongo/account/getAllAccounts');
+const addSnapshot = require('../utils/mongo/snapshot/addSnapshot');
 
 async function createSnapshot(account) {
   const result = await axios.get(`${process.env.API}/slp/${account.eth}`).then(

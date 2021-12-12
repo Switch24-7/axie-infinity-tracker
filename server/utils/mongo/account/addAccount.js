@@ -1,4 +1,4 @@
-const Account = require('../models/account');
+const Account = require('../../../models/account');
 
 module.exports = async function addAccount(name, eth, managerShare) {
   const result = await Account.findOne({

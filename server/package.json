@@ -12,7 +12,8 @@
     "moment": "^2.29.1",
     "mongodb": "^4.2.1",
     "mongoose": "^6.1.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "twilio": "^3.71.3"
   },
   "devDependencies": {
     "eslint": "^8.4.1",

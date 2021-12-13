@@ -22,7 +22,13 @@ router.get('/slp/history', async (req, res, next) => {
 
   accounts.forEach((account) => {
     const { eth } = account;
-    promises.push(getSnapshots(eth));
+    promises.push(getSnapshots(eth).then((doc) => {
+      const { name } = account;
+      const yesterday = doc[1].total - doc[0].total;
+      doc.unshift(yesterday);
+      doc.unshift(name);
+      return doc;
+    }));
   });
 
   const result = await Promise.all(promises).catch((err) => {

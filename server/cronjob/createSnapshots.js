@@ -1,20 +1,23 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const axios = require('axios');
+const twilio = require('twilio')(process.env.TWILIO_ACCOUNT, process.env.TWILIO_AUTH);
 const getAllAccounts = require('../utils/mongo/account/getAllAccounts');
-const addSnapshot = require('../utils/mongo/snapshot/addSnapshot');
+// const addSnapshot = require('../utils/mongo/snapshot/addSnapshot');
 
 async function createSnapshot(account) {
-  const result = await axios.get(`${process.env.API}/slp/${account.eth}`).then(
+  return axios.get(`${process.env.API}/slp/${account.eth}`).then(
     (response) => {
       const { data } = response;
-      return addSnapshot(account, data[0].total, data[0].claimable_total).catch(() => {});
+      return data;
+      // return addSnapshot(account, data[0].total, data[0].claimable_total).catch(() => {});
     },
   );
-  return result;
+  // return result;
 }
 
-console.time('elapsed time');
+const date = new Date();
+const startTime = Date.now();
 
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
@@ -29,8 +32,23 @@ mongoose.connect(process.env.MONGODB_URL, {
   });
   return Promise.all(promises);
 }).then(() => {
-  const date = new Date();
-  console.log('Successfully executed job!', date.toUTCString());
-  console.timeEnd('elapsed time');
+  const endTime = Date.now();
+  const message = `Successfully executed job! ${date.toUTCString()}\nElapsed time: ${(endTime - startTime) / 1000} seconds`;
+  console.log(message);
   mongoose.connection.close();
-});
+  return twilio.messages.create({
+    body: message,
+    from: process.env.TWILIO_PHONE,
+    to: process.env.MY_PHONE,
+  });
+})
+  .catch((err) => {
+    const message = `An error occured when executing the job! Snapshots may or may not have been created...\n${date.toUTCString()}`;
+    console.error(err);
+    mongoose.connection.close();
+    return twilio.messages.create({
+      body: message,
+      from: process.env.TWILIO_PHONE,
+      to: process.env.MY_PHONE,
+    });
+  });

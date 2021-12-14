@@ -25,14 +25,14 @@ function DisplayAccounts(props) {
           <li>
             <ul>
               <li>
+                { date.toLocaleDateString() }
+                {' = '}
+                { snapshot.dayTotal }
+              </li>
+              <li>
                 Total:
                 {' '}
                 { snapshot.currentTotal }
-              </li>
-              <li>
-                Date:
-                {' '}
-                { date.toLocaleDateString() }
               </li>
             </ul>
           </li>

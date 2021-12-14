@@ -24,12 +24,26 @@ router.get('/slp/history', async (req, res, next) => {
     const { eth } = account;
     promises.push(getSnapshots(eth).then((docs) => {
       const results = [];
+      /*
       docs.forEach((doc) => {
         results.push({
           currentTotal: doc.total - doc.totalClaimed,
           date: doc.createdAt,
         });
       });
+      */
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < docs.length - 1; i++) {
+        const currentDoc = docs[i];
+        const previousDoc = docs[i + 1];
+        const currentTotal = currentDoc.total - currentDoc.totalClaimed;
+        const previousTotal = previousDoc.total - previousDoc.totalClaimed;
+        results.push({
+          currentTotal,
+          dayTotal: currentTotal - previousTotal,
+          date: previousDoc.createdAt,
+        });
+      }
       return {
         name: account.name,
         eth: account.eth,

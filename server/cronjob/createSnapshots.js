@@ -3,17 +3,15 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const twilio = require('twilio')(process.env.TWILIO_ACCOUNT, process.env.TWILIO_AUTH);
 const getAllAccounts = require('../utils/mongo/account/getAllAccounts');
-// const addSnapshot = require('../utils/mongo/snapshot/addSnapshot');
+const addSnapshot = require('../utils/mongo/snapshot/addSnapshot');
 
 async function createSnapshot(account) {
   return axios.get(`${process.env.API}/slp/${account.eth}`).then(
     (response) => {
       const { data } = response;
-      return data;
-      // return addSnapshot(account, data[0].total, data[0].claimable_total).catch(() => {});
+      return addSnapshot(account, data[0].total, data[0].claimable_total).catch(() => {});
     },
   );
-  // return result;
 }
 
 const date = new Date();

@@ -52,12 +52,15 @@ export default function TrackerHistory({ open, setOpen, accountHistory }) {
       onClose={handleClose}
       PaperComponent={PaperComponent}
       aria-labelledby="draggable-dialog-title"
+      fullWidth
+      maxWidth="lg"
     >
       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-        History
+        { `${accountHistory.name}, ${accountHistory.eth}` }
       </DialogTitle>
       <DialogContent
-        style={{ height: '50vh', width: '50vw' }}
+        style={{ height: '80vh' }}
+        fullWidth
       >
         <table id={styles['tracker-modal-table']}>
           <thead>

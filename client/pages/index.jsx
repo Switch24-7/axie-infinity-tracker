@@ -48,7 +48,7 @@ export default function Home({ accounts }) {
     const { accounts } = props;
     if (accounts) {
       const rows = accounts.map((account) => {
-        const total = account.today + account.snapshots[0] ? account.snapshots[0].currentTotal : 0;
+        const total = account.snapshots[0] ? account.today + account.snapshots[0].currentTotal : 0;
         const managerShare = Math.round((account.managerShare / 100) * total);
         const scholarShare = total - managerShare;
         return (

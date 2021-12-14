@@ -3,20 +3,38 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 
 export async function getStaticProps() {
+  const promises = [];
   const data = await fetch(`${process.env.API}/slp/history`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   }).then((res) => res.json());
+
+  data.forEach((datum) => {
+    promises.push(fetch(`${process.env.API}/slp/today?eth=${datum.eth}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => res.json()).then((json) => ({
+      eth: datum.eth,
+      name: datum.name,
+      today: json.today,
+      snapshots: datum.snapshots,
+    })));
+  });
+
+  const accounts = await Promise.all(promises).then((result) => result);
   return {
     revalidate: 1,
-    props: { accounts: data },
+    props: { accounts },
   };
 }
 
 function DisplayAccounts(props) {
   const { accounts } = props;
+  const currentDate = new Date();
   if (accounts) {
     const listItems = accounts.map((account) => {
       const snapshots = account.snapshots.map((snapshot) => {
@@ -25,14 +43,10 @@ function DisplayAccounts(props) {
           <li>
             <ul>
               <li>
-                { date.toLocaleDateString() }
-                {' = '}
-                { snapshot.dayTotal }
+                { `${date.toLocaleDateString()} PST = ${snapshot.dayTotal}` }
               </li>
               <li>
-                Total:
-                {' '}
-                { snapshot.currentTotal }
+                { `Total: ${snapshot.currentTotal}` }
               </li>
             </ul>
           </li>
@@ -40,8 +54,9 @@ function DisplayAccounts(props) {
       });
       return (
         <ul>
-          <li>{ account.name }</li>
           <li>{ account.eth }</li>
+          <li>{ account.name }</li>
+          <li>{ `Today at ${currentDate.toLocaleDateString()} PST = ${account.today}` }</li>
           { snapshots }
         </ul>
       );

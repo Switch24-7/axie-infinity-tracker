@@ -56,7 +56,11 @@ export default function TrackerHistory({ open, setOpen, accountHistory }) {
       maxWidth="lg"
     >
       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-        { `${accountHistory.name}, ${accountHistory.eth}` }
+        {
+          accountHistory
+            ? `${accountHistory.name}, ${accountHistory.eth}`
+            : 'History'
+        }
       </DialogTitle>
       <DialogContent
         style={{ height: '80vh' }}

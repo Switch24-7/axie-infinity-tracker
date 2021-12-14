@@ -1,0 +1,46 @@
+#tracker-modal-table {
+  height: 100%;
+  width: 100%;
+  border: 0.5px solid black;
+  text-align: center;
+}
+
+#tracker-container {
+  width: 100%;
+}
+
+#tracker-content {
+  width: 100%;
+}
+
+#tracker-table {
+  min-height: 20%;
+  max-height: 60%;
+  width: 100%;
+  border-collapse: collapse;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box; /* Firefox, other Gecko */
+  box-sizing: border-box; /* Opera/IE 8+ */
+}
+
+#tracker-name {
+  width: 25%;
+}
+
+.tracker-row {
+  border: 0.5px solid black;
+}
+
+.tracker-row-name {
+  text-align: left;
+  width: 25%;
+}
+
+.tracker-row-center {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.tracker-row-history {
+  line-height: 0;
+}

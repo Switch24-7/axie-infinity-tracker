@@ -9,13 +9,18 @@ const router = express.Router();
 
 router.get('/slp/today', async (req, res, next) => {
   const { eth } = req.query;
+
+  if (!eth) {
+    return next(ApiError.badRequest('eth is required!'));
+  }
+
   const data = await axios.get(`${process.env.API}/slp/${eth}`).then((response) => response.data).catch((err) => {
     console.error(err);
     return next(ApiError.internal('Something went wrong!!'));
   });
   const latestSnapshot = await getRecentSnapshots(eth, 1);
-  const today = data.total - latestSnapshot[0].total;
-  res.json({
+  const today = data[0].total - latestSnapshot[0].total;
+  return res.json({
     today: today || 0,
   });
 });
@@ -47,6 +52,7 @@ router.get('/slp/history', async (req, res, next) => {
       return {
         name: account.name,
         eth: account.eth,
+        managerShare: account.managerShare,
         snapshots: results,
       };
     }));

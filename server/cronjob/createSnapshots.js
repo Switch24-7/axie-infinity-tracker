@@ -6,12 +6,17 @@ const getAllAccounts = require('../utils/mongo/account/getAllAccounts');
 const addSnapshot = require('../utils/mongo/snapshot/addSnapshot');
 
 async function createSnapshot(account) {
-  return axios.get(`${process.env.API}/slp/${account.eth}`).then(
-    (response) => {
-      const { data } = response;
-      return addSnapshot(account, data[0].total, data[0].claimable_total).catch(() => {});
-    },
-  );
+  try {
+    return axios.get(`${process.env.API}/slp/${account.eth}`).then(
+      (response) => {
+        const { data } = response;
+        return addSnapshot(account, data[0].total, data[0].claimable_total).catch(() => {});
+      },
+    );
+  } catch (e) {
+    console.error(e.response.status, '\n', e.response.statusText);
+    return e;
+  }
 }
 
 const date = new Date();
@@ -30,6 +35,7 @@ mongoose.connect(process.env.MONGODB_URL, {
   });
   return Promise.all(promises);
 }).then(() => {
+  console.log('in here\n');
   const endTime = Date.now();
   const message = `Successfully executed job! ${date.toUTCString()}\nElapsed time: ${(endTime - startTime) / 1000} seconds`;
   console.log(message);

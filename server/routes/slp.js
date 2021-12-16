@@ -14,15 +14,17 @@ router.get('/slp/today', async (req, res, next) => {
     return next(ApiError.badRequest('eth is required!'));
   }
 
-  const data = await axios.get(`${process.env.API}/slp/${eth}`).then((response) => response.data).catch((err) => {
-    console.error(err);
+  try {
+    const data = await axios.get(`${process.env.API}/slp/${eth}`).then((response) => response.data);
+    const latestSnapshot = await getRecentSnapshots(eth, 1);
+    const today = data[0].total - latestSnapshot[0].total;
+    return res.json({
+      today: today || 0,
+    });
+  } catch (err) {
+    console.error(err.response.status, '\n', err.response.statusText);
     return next(ApiError.internal('Something went wrong!!'));
-  });
-  const latestSnapshot = await getRecentSnapshots(eth, 1);
-  const today = data[0].total - latestSnapshot[0].total;
-  return res.json({
-    today: today || 0,
-  });
+  }
 });
 
 router.get('/slp/history', async (req, res, next) => {

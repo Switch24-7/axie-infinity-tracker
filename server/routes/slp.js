@@ -68,10 +68,9 @@ router.get('/slp/history', async (req, res, next) => {
         const currentDoc = docs[i];
         const previousDoc = docs[i + 1];
         const currentTotal = currentDoc.total - currentDoc.totalClaimed;
-        const previousTotal = previousDoc.total - previousDoc.totalClaimed;
         results.push({
           currentTotal,
-          dayTotal: currentTotal - previousTotal,
+          dayTotal: currentDoc.total - previousDoc.total,
           date: previousDoc.createdAt,
         });
       }

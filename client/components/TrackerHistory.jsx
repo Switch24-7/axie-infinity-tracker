@@ -23,20 +23,33 @@ function DisplayRows(props) {
   const { accountHistory } = props;
   const { snapshots } = accountHistory;
   if (snapshots) {
+    let total = 0;
+    let managerTotal = 0;
+    let scholarTotal = 0;
     const rows = snapshots.map((snapshot) => {
       const date = new Date(snapshot.date);
-      const managerShare = Math.round((accountHistory.managerShare / 100) * snapshot.currentTotal);
-      const scholarShare = snapshot.currentTotal - managerShare;
+      const managerShare = Math.round((accountHistory.managerShare / 100) * snapshot.dayTotal);
+      const scholarShare = snapshot.dayTotal - managerShare;
+      total += snapshot.dayTotal;
+      managerTotal += managerShare;
+      scholarTotal += scholarShare;
       return (
         <tr className={styles['tracker-row']}>
           <td id={styles['tracker-row-center']}>{ date.toLocaleDateString() }</td>
           <td id={styles['tracker-row-center']}>{ snapshot.dayTotal }</td>
           <td id={styles['tracker-row-center']}>{ scholarShare }</td>
           <td id={styles['tracker-row-center']}>{ managerShare }</td>
-          <td id={styles['tracker-row-center']}>{ snapshot.currentTotal }</td>
         </tr>
       );
     });
+    rows.unshift(
+      <tr className={styles['tracker-row']}>
+        <td id={styles['tracker-row-center']}>Overall</td>
+        <td id={styles['tracker-row-center']}>{ total }</td>
+        <td id={styles['tracker-row-center']}>{ scholarTotal }</td>
+        <td id={styles['tracker-row-center']}>{ managerTotal }</td>
+      </tr>,
+    );
     return rows;
   } return (<tr />);
 }
@@ -73,7 +86,6 @@ export default function TrackerHistory({ open, setOpen, accountHistory }) {
               <th>SLP Earned</th>
               <th>Scholar</th>
               <th>Manager</th>
-              <th>Total</th>
             </tr>
           </thead>
           <tbody>

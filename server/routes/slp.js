@@ -8,18 +8,42 @@ const ApiError = require('../error/ApiError');
 const router = express.Router();
 
 router.get('/slp/today', async (req, res, next) => {
-  const { eth } = req.query;
+  const { ethList } = req.query;
 
-  if (!eth) {
-    return next(ApiError.badRequest('eth is required!'));
+  if (!ethList) {
+    return next(ApiError.badRequest('a list of eth is required!'));
   }
 
+  const eths = ethList.split(',');
+  let ethParams = '';
+  eths.forEach((eth, idx, array) => {
+    if (idx !== array.length - 1) {
+      ethParams += `${eth},`;
+    } else ethParams += `${eth}`;
+  });
+
   try {
-    const data = await axios.get(`${process.env.API}/slp/${eth}`).then((response) => response.data);
-    const latestSnapshot = await getRecentSnapshots(eth, 1);
-    const today = data[0].total - latestSnapshot[0].total;
+    const promises = [];
+    const data = await axios.get(`${process.env.API}/slp/${ethParams}`).then((response) => response.data);
+    data.forEach((datum) => {
+      const eth = `ronin:${datum.client_id.substring(2, datum.client_id.length)}`;
+      promises.push(
+        getRecentSnapshots(eth, 1).then((result) => {
+          const today = datum.total - result[0].total;
+          return {
+            eth,
+            today: today || 0,
+          };
+        }),
+      );
+    });
+    const promiseResults = await Promise.all(promises);
+    const todayResults = {};
+    promiseResults.forEach((promiseResult) => {
+      todayResults[promiseResult.eth] = promiseResult.today;
+    });
     return res.json({
-      today: today || 0,
+      todayResults,
     });
   } catch (err) {
     console.error(err.response.status, '\n', err.response.statusText);

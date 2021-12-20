@@ -4,7 +4,6 @@ import TrackerHistory from '../components/TrackerHistory';
 import trackerStyles from '../styles/Tracker.module.css';
 
 export async function getStaticProps() {
-  const promises = [];
   const data = await fetch(`${process.env.API}/slp/history`, {
     method: 'GET',
     headers: {
@@ -12,22 +11,35 @@ export async function getStaticProps() {
     },
   }).then((res) => res.json());
 
-  data.forEach((datum) => {
-    promises.push(fetch(`${process.env.API}/slp/today?eth=${datum.eth}`, {
+  const accounts = [];
+  let ethParams = '';
+  data.forEach((datum, idx, array) => {
+    if (idx !== array.length - 1) {
+      ethParams += `${datum.eth},`;
+    } else ethParams += `${datum.eth}`;
+  });
+
+  try {
+    await fetch(`${process.env.API}/slp/today?ethList=${ethParams}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-    }).then((res) => res.json()).then((json) => ({
-      eth: datum.eth,
-      name: datum.name,
-      managerShare: datum.managerShare,
-      today: json.today,
-      snapshots: datum.snapshots,
-    })));
-  });
-
-  const accounts = await Promise.all(promises).then((result) => result);
+    }).then((res) => res.json()).then((json) => {
+      const { todayResults } = json;
+      data.forEach((datum) => {
+        accounts.push({
+          eth: datum.eth,
+          name: datum.name,
+          managerShare: datum.managerShare,
+          snapshots: datum.snapshots,
+          today: todayResults[datum.eth] || 0,
+        });
+      });
+    });
+  } catch (e) {
+    console.error(e);
+  }
   return {
     revalidate: 1,
     props: { accounts },

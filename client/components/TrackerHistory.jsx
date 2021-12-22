@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Paper from '@mui/material/Paper';
 import Draggable from 'react-draggable';
-import styles from '../styles/Tracker.module.css';
+import styles from '../styles/TrackerModal.module.css';
 
 function PaperComponent(props) {
   return (
@@ -19,39 +19,89 @@ function PaperComponent(props) {
   );
 }
 
-function DisplayRows(props) {
+function DisplayBaseInfo(props) {
+  const { accountHistory } = props;
+  const columns = [];
+  if (accountHistory) {
+    const { snapshots } = accountHistory;
+    let highestSLP = 0;
+    let lowestSLP = Number.MAX_SAFE_INTEGER;
+    let avgSLP = 0;
+    let quota = 0;
+    let missingOrExtra = 0;
+
+    snapshots.forEach((snapshot) => {
+      highestSLP = Math.max(highestSLP, snapshot.dayTotal);
+      lowestSLP = Math.min(lowestSLP, snapshot.dayTotal);
+      avgSLP += snapshot.dayTotal;
+      quota = avgSLP;
+    });
+    avgSLP = Math.round((avgSLP / snapshots.length) * 100) / 100;
+    quota = 3000 - quota;
+    missingOrExtra = quota - 3000;
+
+    columns.push(<td>{ accountHistory.name }</td>);
+    columns.push(<td>{ highestSLP }</td>);
+    columns.push(<td>{ lowestSLP }</td>);
+    columns.push(<td>{ avgSLP }</td>);
+    columns.push(<td>{ quota }</td>);
+    columns.push(<td>{ missingOrExtra }</td>);
+  }
+
+  return (
+    <tr>
+      { columns.map((column) => (column)) }
+    </tr>
+  );
+}
+
+function DisplayDays(props) {
   const { accountHistory } = props;
   const { snapshots } = accountHistory;
+  const columnHead = [];
+  const columnBody = [];
+
   if (snapshots) {
-    let total = 0;
-    let managerTotal = 0;
-    let scholarTotal = 0;
-    const rows = snapshots.map((snapshot) => {
+    for (let idx = snapshots.length - 1; idx >= 0; idx -= 1) {
+      const snapshot = snapshots[idx];
       const date = new Date(snapshot.date);
-      const managerShare = Math.round((accountHistory.managerShare / 100) * snapshot.dayTotal);
-      const scholarShare = snapshot.dayTotal - managerShare;
-      total += snapshot.dayTotal;
-      managerTotal += managerShare;
-      scholarTotal += scholarShare;
-      return (
-        <tr className={styles['tracker-row']}>
-          <td id={styles['tracker-row-center']}>{ date.toLocaleDateString() }</td>
-          <td id={styles['tracker-row-center']}>{ snapshot.dayTotal }</td>
-          <td id={styles['tracker-row-center']}>{ scholarShare }</td>
-          <td id={styles['tracker-row-center']}>{ managerShare }</td>
-        </tr>
+      columnHead.push(
+        <th>{ date.toLocaleDateString() }</th>,
       );
+      columnBody.push(
+        <td>{ snapshot.dayTotal }</td>,
+      );
+    }
+  }
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          { columnHead.map((column) => (column)) }
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          { columnBody.map((column) => (column)) }
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+function DisplayTotalSLP(props) {
+  const { accountHistory } = props;
+  const { snapshots } = accountHistory;
+  let totalSLP = 0;
+
+  if (snapshots) {
+    snapshots.forEach((snapshot) => {
+      totalSLP += snapshot.dayTotal;
     });
-    rows.unshift(
-      <tr className={styles['tracker-row']}>
-        <td id={styles['tracker-row-center']}>Overall</td>
-        <td id={styles['tracker-row-center']}>{ total }</td>
-        <td id={styles['tracker-row-center']}>{ scholarTotal }</td>
-        <td id={styles['tracker-row-center']}>{ managerTotal }</td>
-      </tr>,
-    );
-    return rows;
-  } return (<tr />);
+  }
+
+  return totalSLP;
 }
 
 export default function TrackerHistory({ open, setOpen, accountHistory }) {
@@ -79,19 +129,38 @@ export default function TrackerHistory({ open, setOpen, accountHistory }) {
         style={{ height: '80vh' }}
         fullWidth
       >
-        <table id={styles['tracker-modal-table']}>
-          <thead>
-            <tr className={styles['tracker-row']}>
-              <th>Date</th>
-              <th>SLP Earned</th>
-              <th>Scholar</th>
-              <th>Manager</th>
-            </tr>
-          </thead>
-          <tbody>
-            <DisplayRows accountHistory={accountHistory} />
-          </tbody>
-        </table>
+        <div id={styles['content-container']}>
+          <table id={styles['base-info-table']}>
+            <thead>
+              <tr>
+                <th>Scholar</th>
+                <th>Highest SLP</th>
+                <th>Lowest SLP</th>
+                <th>AVG SLP</th>
+                <th>15th Days Quota</th>
+                <th>Missing/Extra</th>
+              </tr>
+            </thead>
+            <tbody>
+              <DisplayBaseInfo accountHistory={accountHistory} />
+            </tbody>
+          </table>
+          <section id={styles['table-container']}>
+            <DisplayDays accountHistory={accountHistory} />
+          </section>
+          <table>
+            <thead>
+              <tr>
+                <th>Total SLP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <DisplayTotalSLP accountHistory={accountHistory} />
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Exit</Button>

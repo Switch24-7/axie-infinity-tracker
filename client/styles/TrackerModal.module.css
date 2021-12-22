@@ -1,0 +1,11 @@
+#content-container {
+  display: flex;
+}
+
+#content-container table {
+  text-align: center;
+}
+
+#table-container {
+  overflow-x: scroll;
+}
